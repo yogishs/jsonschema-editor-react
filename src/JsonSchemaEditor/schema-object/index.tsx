@@ -5,15 +5,7 @@ import {
 	JSONSchema7Definition,
 } from "../../JsonSchemaEditor.types";
 import { useState, State } from "@hookstate/core";
-import {
-	Button,
-	Modal,
-	ModalBody,
-	ModalContent,
-	ModalFooter,
-	ModalHeader,
-	ModalOverlay,
-} from "@chakra-ui/react";
+import Modal from "@arco-design/web-react/lib/Modal"
 import { AdvancedSettings } from "../schema-advanced";
 export interface SchemaObjectProps {
 	schemaState: State<JSONSchema7>;
@@ -72,18 +64,11 @@ export const SchemaObject: React.FunctionComponent<SchemaObjectProps> = (
 					);
 				})}
 				<Modal
-					isOpen={localState.isAdvancedOpen.get()}
-					finalFocusRef={focusRef}
-					size="lg"
-					onClose={onCloseAdvanced}
-				>
-					<ModalOverlay />
-					<ModalContent>
-						<ModalHeader textAlign="center">
-							Advanced Schema Settings
-						</ModalHeader>
-
-						<ModalBody>
+					visible={localState.isAdvancedOpen.get()}
+					onOk={onCloseAdvanced}
+					okText="Close"
+					hideCancel={true}
+					title="Advanced Schema Settings">
 							<AdvancedSettings
 								itemStateProp={
 									propertiesOrNull.nested(
@@ -91,19 +76,6 @@ export const SchemaObject: React.FunctionComponent<SchemaObjectProps> = (
 									) as State<JSONSchema7>
 								}
 							/>
-						</ModalBody>
-
-						<ModalFooter>
-							<Button
-								colorScheme="blue"
-								variant="ghost"
-								mr={3}
-								onClick={onCloseAdvanced}
-							>
-								Close
-							</Button>
-						</ModalFooter>
-					</ModalContent>
 				</Modal>
 			</div>
 		);

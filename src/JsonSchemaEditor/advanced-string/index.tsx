@@ -1,29 +1,24 @@
 import * as React from "react";
-import {
-	Flex,
-	Input,
-	FormLabel,
-	Stack,
-	NumberInput,
-	NumberInputField,
-	NumberInputStepper,
-	NumberIncrementStepper,
-	NumberDecrementStepper,
-	Checkbox,
-	Textarea,
-	Select,
-} from "@chakra-ui/react";
+import Form from '@arco-design/web-react/lib/Form';
+import Input from '@arco-design/web-react/lib/Input';
+import InputNumber from '@arco-design/web-react/lib/InputNumber';
+import Checkbox from '@arco-design/web-react/lib/Checkbox';
+import Select from '@arco-design/web-react/lib/Select';
+import TextArea from '@arco-design/web-react/lib/Input/textarea';
+
+
 import {
 	AdvancedItemStateProps,
 	JSONSchema7,
 } from "../../JsonSchemaEditor.types";
-import { none, useState } from "@hookstate/core";
-import { StringFormat } from "../utils";
+import {none, useState} from "@hookstate/core";
+import {StringFormat} from "../utils";
+import {Space} from "@arco-design/web-react";
 
 export const AdvancedString: React.FunctionComponent<AdvancedItemStateProps> = (
 	props: React.PropsWithChildren<AdvancedItemStateProps>
 ) => {
-	const { itemStateProp } = props;
+	const {itemStateProp} = props;
 
 	const changeEnumOtherValue = (value: string): string[] | null => {
 		const array = value.split("\n");
@@ -43,146 +38,103 @@ export const AdvancedString: React.FunctionComponent<AdvancedItemStateProps> = (
 	const enumValue = enumData?.join("\n");
 
 	return (
-		<Flex direction="column" wrap="nowrap">
-			<Stack
-				isInline
-				alignItems="center"
-				justifyContent="center"
-				alignContent="center"
-				m={1}
-			>
-				<FormLabel mr={2}>Default: </FormLabel>
+		<div className="arco-form arco-form-vertical">
+			<Form.Item layout="vertical" label="Default" colon={true}>
 				<Input
 					id="default"
 					placeholder="Default value"
 					value={(itemState.default.value as string) ?? ""}
-					onChange={(evt: React.ChangeEvent<HTMLInputElement>) => {
-						itemState.default.set(evt.target.value);
+					onChange={(value) => {
+						itemState.default.set(value);
 					}}
 				/>
-			</Stack>
+			</Form.Item>
+			<div className="arco-form arco-form-inline">
+				<Space size="small">
+					<Form.Item layout="vertical" label="Min Length" colon={true}>
+						<InputNumber
+							defaultValue={Number(itemState.minLength.value)}
+							onChange={(value: number | string) => {
+								itemState.minLength.set(Number(value));
+							}}
+							value={Number(itemState.minLength.value)}
+						/>
+					</Form.Item>
 
-			<Stack
-				isInline
-				alignItems="center"
-				justifyContent="center"
-				alignContent="center"
-				m={1}
-			>
-				<FormLabel mr={2}>Min Length: </FormLabel>
-				<NumberInput
-					size="sm"
-					defaultValue={Number(itemState.minLength.value)}
-					onChange={(value: number | string) => {
-						itemState.minLength.set(Number(value));
-					}}
-				>
-					<NumberInputField value={Number(itemState.minLength.value)} />
-					<NumberInputStepper>
-						<NumberIncrementStepper />
-						<NumberDecrementStepper />
-					</NumberInputStepper>
-				</NumberInput>
-				<FormLabel mr={2}>Max Length: </FormLabel>
-				<NumberInput
-					size="sm"
-					defaultValue={Number(itemState.maxLength.value)}
-					onChange={(value: number | string) => {
-						itemState.maxLength.set(Number(value));
-					}}
-				>
-					<NumberInputField value={Number(itemState.maxLength.value)} />
-					<NumberInputStepper>
-						<NumberIncrementStepper />
-						<NumberDecrementStepper />
-					</NumberInputStepper>
-				</NumberInput>
-			</Stack>
-			<Stack
-				isInline
-				alignItems="center"
-				justifyContent="center"
-				alignContent="center"
-				m={1}
-			>
-				<FormLabel mr={2} htmlFor="pattern">
-					Pattern:{" "}
-				</FormLabel>
+					<Form.Item layout="vertical" label="Max Length" colon={true}>
+						<InputNumber
+							defaultValue={Number(itemState.maxLength.value)}
+							onChange={(value: number | string) => {
+								itemState.maxLength.set(Number(value));
+							}}
+							value={Number(itemState.maxLength.value)}
+						/>
+					</Form.Item>
+				</Space>
+			</div>
+			<Form.Item layout="vertical" label="Pattern" colon={true}>
 				<Input
 					id="pattern"
 					placeholder="MUST be a valid regular expression."
 					value={itemState.pattern.value ?? ""}
-					onChange={(evt: React.ChangeEvent<HTMLInputElement>) => {
-						itemState.pattern.set(evt.target.value);
+					onChange={(value) => {
+						itemState.pattern.set(value);
 					}}
 				/>
-			</Stack>
-
-			<Stack
-				isInline
-				alignItems="center"
-				justifyContent="center"
-				alignContent="center"
-				m={1}
-			>
-				<FormLabel mr={2}>Enum: </FormLabel>
-				<Checkbox
-					isChecked={isEnumChecked}
-					onChange={(evt: React.ChangeEvent<HTMLInputElement>) => {
-						if (!evt.target.checked) {
-							itemState.enum.set(none);
-						} else {
-							itemState.enum.set(Array<string>());
-						}
-					}}
-				/>
-				<Textarea
-					value={enumValue || ""}
-					isDisabled={!isEnumChecked}
-					placeholder="ENUM Values - One Entry Per Line"
-					onChange={(evt: React.ChangeEvent<HTMLTextAreaElement>) => {
-						const update = changeEnumOtherValue(evt.target.value);
-						if (update === null) {
-							itemState.enum.set(none);
-						} else {
-							itemState.enum.set(update as string[]);
-						}
-					}}
-				/>
-			</Stack>
-			<Stack
-				isInline
-				alignItems="center"
-				justifyContent="center"
-				alignContent="center"
-				m={1}
-			>
-				<FormLabel mr={2} htmlFor="format">
-					Format:{" "}
-				</FormLabel>
+			</Form.Item>
+			<div className="arco-form arco-form-inline">
+				<Space size="small">
+					<Form.Item layout="vertical" label="Enum" colon={true}>
+						<Checkbox
+							checked={isEnumChecked}
+							onChange={(value) => {
+								if (!value) {
+									itemState.enum.set(none);
+								} else {
+									itemState.enum.set(Array<string>());
+								}
+							}}
+						/>
+					</Form.Item>
+					<Form.Item layout="vertical">
+						<TextArea
+							value={enumValue || ""}
+							disabled={!isEnumChecked}
+							placeholder="ENUM Values - One Entry Per Line"
+							onChange={(value) => {
+								const update = changeEnumOtherValue(value);
+								if (update === null) {
+									itemState.enum.set(none);
+								} else {
+									itemState.enum.set(update as string[]);
+								}
+							}}
+						/>
+					</Form.Item>
+				</Space>
+			</div>
+			<Form.Item layout="vertical" label="Format" colon={true}>
 				<Select
-					variant="outline"
+
 					value={itemState.format.value ?? ""}
-					size="sm"
-					margin={2}
 					placeholder="Choose data type"
-					onChange={(evt: React.ChangeEvent<HTMLSelectElement>) => {
-						if (evt.target.value === "") {
+					onChange={(value) => {
+						if (value === "") {
 							itemState.format.set(none);
 						} else {
-							itemState.format.set(evt.target.value);
+							itemState.format.set(value);
 						}
 					}}
 				>
 					{StringFormat.map((item, index) => {
 						return (
-							<option key={String(index)} value={item.name}>
+							<Select.Option key={String(index)} value={item.name}>
 								{item.name}
-							</option>
+							</Select.Option>
 						);
 					})}
 				</Select>
-			</Stack>
-		</Flex>
+			</Form.Item>
+		</div>
 	);
 };

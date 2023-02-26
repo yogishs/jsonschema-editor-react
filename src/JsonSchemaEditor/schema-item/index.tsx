@@ -1,19 +1,14 @@
 import * as React from "react";
-import {
-	Flex,
-	Input,
-	Checkbox,
-	FlexProps,
-	Select,
-	Tooltip,
-	IconButton,
-	useToast,
-} from "@chakra-ui/react";
-import { FiSettings } from "react-icons/fi";
-import { IoIosAddCircleOutline } from "react-icons/io";
-import { AiOutlineDelete } from "react-icons/ai";
-import { DropPlus } from "../drop-plus";
-import { useState, State, none } from "@hookstate/core";
+import Form from '@arco-design/web-react/lib/Form';
+import Input from '@arco-design/web-react/lib/Input';
+import Checkbox from '@arco-design/web-react/lib/Checkbox';
+import Select from '@arco-design/web-react/lib/Select';
+import Notification from '@arco-design/web-react/lib/Notification';
+import {Button} from "@arco-design/web-react/lib";
+import {IconDelete, IconPlusCircle, IconSettings} from "@arco-design/web-react/icon";
+import Tooltip from "@arco-design/web-react/lib/Tooltip";
+import {DropPlus} from "../drop-plus";
+import {useState, State, none} from "@hookstate/core";
 import {
 	JSONSchema7,
 	JSONSchema7Definition,
@@ -26,12 +21,12 @@ import {
 	random,
 	handleTypeChange,
 } from "../utils";
-import { renameKeys, deleteKey } from "../utils";
-import { useDebouncedCallback } from "use-debounce";
-import { SchemaObject } from "../schema-object";
-import { SchemaArray } from "../schema-array";
+import {renameKeys, deleteKey} from "../utils";
+import {useDebouncedCallback} from "use-debounce";
+import {SchemaObject} from "../schema-object";
+import {SchemaArray} from "../schema-array";
 
-export interface SchemaItemProps extends FlexProps {
+export interface SchemaItemProps {
 	required: string[];
 	itemStateProp: State<JSONSchema7>;
 	parentStateProp: State<JSONSchema7>;
@@ -57,8 +52,8 @@ export const SchemaItem: React.FunctionComponent<SchemaItemProps> = (
 	const parentStateOrNull: State<JSONSchema7> | undefined = parentState.ornull;
 	const propertiesOrNull:
 		| State<{
-				[key: string]: JSONSchema7Definition;
-		  }>
+		[key: string]: JSONSchema7Definition;
+	}>
 		| undefined = parentStateOrNull.properties.ornull;
 
 	const nameState = useState(name);
@@ -70,7 +65,7 @@ export const SchemaItem: React.FunctionComponent<SchemaItemProps> = (
 		}>).nested(nameState.value)
 	);
 
-	const { length } = parentState.path.filter((name) => name !== "properties");
+	const {length} = parentState.path.filter((name) => name !== "properties");
 	const tagPaddingLeftStyle = {
 		paddingLeft: `${20 * (length + 1)}px`,
 	};
@@ -78,7 +73,6 @@ export const SchemaItem: React.FunctionComponent<SchemaItemProps> = (
 	const isRequired = required
 		? required.length > 0 && required.includes(name)
 		: false;
-	const toast = useToast();
 
 	// Debounce callback
 	const debounced = useDebouncedCallback(
@@ -86,20 +80,19 @@ export const SchemaItem: React.FunctionComponent<SchemaItemProps> = (
 		(newValue: string) => {
 			// Todo: make toast for duplicate properties
 			if (propertiesOrNull && propertiesOrNull[newValue].value) {
-				toast({
+				Notification.error({
 					title: "Duplicate Property",
-					description: "Property already exists!",
-					status: "error",
+					content: "Property already exists!",
 					duration: 1000,
-					isClosable: true,
-					position: "top",
+					closable: true,
+
 				});
 			} else {
 				const oldName = name;
 				const proptoupdate = newValue;
 
 				const newobj = renameKeys(
-					{ [oldName]: proptoupdate },
+					{[oldName]: proptoupdate},
 					parentState.properties.value
 				);
 				parentStateOrNull.properties.set(JSON.parse(JSON.stringify(newobj)));
@@ -114,50 +107,41 @@ export const SchemaItem: React.FunctionComponent<SchemaItemProps> = (
 	}
 
 	return (
-		<div>
-			<Flex
-				alignContent="space-evenly"
-				direction="row"
-				wrap="nowrap"
-				className="schema-item"
-				style={tagPaddingLeftStyle}
-			>
+		<div className="arco-form arco-form-inline" style={tagPaddingLeftStyle}>
+			<Form.Item layout={"inline"}>
 				<Input
-					isDisabled={isReadOnlyState.value}
+					disabled={isReadOnlyState.value}
 					defaultValue={nameState.value}
-					size="sm"
-					margin={2}
-					variant="outline"
 					placeholder="Enter property name"
-					onChange={(evt: React.ChangeEvent<HTMLInputElement>) => {
-						debounced(evt.target.value);
+					onChange={(value) => {
+						debounced(value);
 					}}
 				/>
+			</Form.Item>
+			<Form.Item layout={"inline"}>
 				<Checkbox
-					isDisabled={isReadOnlyState.value}
-					isChecked={isRequired}
-					margin={2}
-					colorScheme="blue"
-					onChange={(evt: React.ChangeEvent<HTMLInputElement>) => {
-						if (!evt.target.checked && required.includes(name)) {
+					disabled={isReadOnlyState.value}
+					checked={isRequired}
+					onChange={(value) => {
+						if (!value && required.includes(name)) {
 							(parentState.required as State<string[]>)[
 								required.indexOf(name)
-							].set(none);
+								].set(none);
 						} else {
 							parentState.required.merge([name]);
 						}
 					}}
 				/>
+			</Form.Item>
+			<Form.Item layout={"inline"}>
 				<Select
-					isDisabled={false}
-					variant="outline"
-					value={itemState.type.value}
-					size="sm"
-					margin={2}
+					style={{width: '8rem'}}
+					disabled={false}
+					value={itemState.type.value as string}
 					placeholder="Choose data type"
-					onChange={(evt: React.ChangeEvent<HTMLSelectElement>) => {
+					onChange={(value) => {
 						const newSchema = handleTypeChange(
-							evt.target.value as JSONSchema7TypeName,
+							value as JSONSchema7TypeName,
 							false
 						);
 						itemState.set(newSchema as JSONSchema7);
@@ -165,53 +149,47 @@ export const SchemaItem: React.FunctionComponent<SchemaItemProps> = (
 				>
 					{SchemaTypes.map((item, index) => {
 						return (
-							<option key={String(index)} value={item}>
+							<Select.Option key={String(index)} value={item}>
 								{item}
-							</option>
+							</Select.Option>
 						);
 					})}
 				</Select>
+			</Form.Item>
+			<Form.Item layout={"inline"}>
 				<Input
-					isDisabled={isReadOnlyState.value}
+					disabled={isReadOnlyState.value}
 					value={itemState.title.value || ""}
-					size="sm"
-					margin={2}
-					variant="outline"
 					placeholder="Add Title"
-					onChange={(evt: React.ChangeEvent<HTMLInputElement>) => {
-						itemState.title.set(evt.target.value);
+					onChange={(value) => {
+						itemState.title.set(value);
 					}}
 				/>
+			</Form.Item>
+			<Form.Item layout={"inline"}>
 				<Input
-					isDisabled={isReadOnlyState.value}
+					disabled={isReadOnlyState.value}
 					value={itemState.description.value || ""}
-					size="sm"
-					margin={2}
-					variant="outline"
 					placeholder="Add Description"
-					onChange={(evt: React.ChangeEvent<HTMLInputElement>) => {
-						itemState.description.set(evt.target.value);
+					onChange={(value) => {
+						itemState.description.set(value);
 					}}
 				/>
-
+			</Form.Item>
+			<Form.Item layout={"inline"}>
 				{itemState.type.value !== "object" && itemState.type.value !== "array" && (
+
 					<Tooltip
-						hasArrow
 						aria-label="Advanced Settings"
-						label="Advanced Settings"
-						placement="top"
+						content="Advanced Settings"
+						position="top"
 					>
-						<IconButton
-							isRound
-							isDisabled={isReadOnlyState.value}
-							size="sm"
-							mt={2}
-							mb={2}
-							ml={1}
-							variant="link"
-							colorScheme="blue"
-							fontSize="16px"
-							icon={<FiSettings />}
+						<Button
+							shape="round"
+							type="text"
+							disabled={isReadOnlyState.value}
+							status="default"
+							icon={<IconSettings style={{fontSize: '1rem'}}/>}
 							aria-label="Advanced Settings"
 							onClick={() => {
 								showadvanced(name);
@@ -219,24 +197,17 @@ export const SchemaItem: React.FunctionComponent<SchemaItemProps> = (
 						/>
 					</Tooltip>
 				)}
-
 				<Tooltip
-					hasArrow
 					aria-label="Remove Node"
-					label="Remove Node"
-					placement="top"
+					content="Remove Node"
+					position="top"
 				>
-					<IconButton
-						isRound
-						isDisabled={isReadOnlyState.value}
-						size="sm"
-						mt={2}
-						mb={2}
-						ml={1}
-						variant="link"
-						colorScheme="red"
-						fontSize="16px"
-						icon={<AiOutlineDelete />}
+					<Button
+						shape="round"
+						type="text"
+						disabled={isReadOnlyState.value}
+						status="danger"
+						icon={<IconDelete style={{fontSize: '1rem'}}/>}
 						aria-label="Remove Node"
 						onClick={() => {
 							const updatedState = deleteKey(
@@ -256,22 +227,16 @@ export const SchemaItem: React.FunctionComponent<SchemaItemProps> = (
 					/>
 				) : (
 					<Tooltip
-						hasArrow
 						aria-label="Add Sibling Node"
-						label="Add Sibling Node"
-						placement="top"
+						content="Add Sibling Node"
+						position="top"
 					>
-						<IconButton
-							isRound
-							isDisabled={isReadOnlyState.value}
-							size="sm"
-							mt={2}
-							mb={2}
-							mr={2}
-							variant="link"
-							colorScheme="green"
-							fontSize="16px"
-							icon={<IoIosAddCircleOutline />}
+						<Button
+							shape="round"
+							type="text"
+							disabled={isReadOnlyState.value}
+							status="success"
+							icon={<IconPlusCircle style={{fontSize: '1rem'}}/>}
 							aria-label="Add Sibling Node"
 							onClick={() => {
 								if (propertiesOrNull) {
@@ -284,12 +249,12 @@ export const SchemaItem: React.FunctionComponent<SchemaItemProps> = (
 						/>
 					</Tooltip>
 				)}
-			</Flex>
+			</Form.Item>
 			{itemState.type?.value === "object" && (
-				<SchemaObject isReadOnly={isReadOnlyState} schemaState={itemState} />
+				<SchemaObject isReadOnly={isReadOnlyState} schemaState={itemState}/>
 			)}
 			{itemState.type?.value === "array" && (
-				<SchemaArray isReadOnly={isReadOnlyState} schemaState={itemState} />
+				<SchemaArray isReadOnly={isReadOnlyState} schemaState={itemState}/>
 			)}
 		</div>
 	);

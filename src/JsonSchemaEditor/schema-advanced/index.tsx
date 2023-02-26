@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Flex } from "@chakra-ui/react";
 import { AdvancedString } from "../advanced-string";
 import { AdvancedNumber } from "../advanced-number";
 import { AdvancedBoolean } from "../advanced-boolean";
@@ -31,5 +30,5 @@ export const AdvancedSettings: React.FunctionComponent<AdvancedSettingsProps> = 
 		}
 	};
 
-	return <Flex>{getAdvancedView(itemState)}</Flex>;
+	return <>{getAdvancedView(itemState)}</>;
 };
