@@ -7,7 +7,6 @@ import { SchemaRoot } from "./schema-root";
 import { Whoops } from "./whoops";
 import { SchemaObject } from "./schema-object";
 import { SchemaArray } from "./schema-array";
-import "@arco-themes/react-yogishs/css/arco.css";
 import {ConfigProvider} from "@arco-design/web-react";
 import {Grid} from "@arco-design/web-react/lib";
 export * from "../JsonSchemaEditor.types";
