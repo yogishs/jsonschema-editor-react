@@ -48,6 +48,8 @@ export const JsonSchemaEditor = (props: SchemaEditorProps) => {
 						/>
 					)}
 				</Grid.Col>
+				<Grid.Col>
+				</Grid.Col>
 			) : (
 				<Grid.Col >
 					<Whoops />
