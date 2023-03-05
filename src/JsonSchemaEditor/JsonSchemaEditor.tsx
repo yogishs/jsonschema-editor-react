@@ -9,8 +9,6 @@ import { SchemaObject } from "./schema-object";
 import { SchemaArray } from "./schema-array";
 import {ConfigProvider} from "@arco-design/web-react";
 import {Grid} from "@arco-design/web-react/lib";
-import "@arco-themes/react-yogishs/css/arco.css";
-import "./app.css";
 import Button from "@arco-design/web-react/lib/Button";
 import {IconSave} from "@arco-design/web-react/icon";
 export * from "../JsonSchemaEditor.types";
