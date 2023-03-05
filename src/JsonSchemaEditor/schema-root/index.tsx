@@ -15,6 +15,7 @@ export interface SchemaArrayProps {
 	schemaState: State<JSONSchema7>;
 	onSchemaChange: (results: string) => void;
 	isReadOnly: State<boolean>;
+	children:  (false | JSX.Element)[];
 }
 
 export const SchemaRoot: React.FunctionComponent<SchemaArrayProps> = (
