@@ -54,7 +54,7 @@ export const SchemaArray: React.FunctionComponent<SchemaArrayProps> = (
 	});
 
 	return (
-		<div className="arco-form arco-form-inline" style={tagPaddingLeftStyle}>
+		<div className="arco-form arco-form-inline">
 			<Form.Item layout="inline">
 				<Input
 					key="Items"

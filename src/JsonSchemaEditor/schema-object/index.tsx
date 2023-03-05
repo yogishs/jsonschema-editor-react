@@ -47,7 +47,7 @@ export const SchemaObject: React.FunctionComponent<SchemaObjectProps> = (
 		return <></>;
 	} else {
 		return (
-			<div className="object-style">
+			<div>
 				{propertiesOrNull?.keys?.map((name) => {
 					return (
 						<SchemaItem
